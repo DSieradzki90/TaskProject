@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.dsieradzki.taskprojecttodoapp.model.Task;
 import pl.dsieradzki.taskprojecttodoapp.model.TaskRepository;
@@ -39,8 +40,11 @@ public class TaskController {
         if (!taskRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        toUpdate.setId(id);
-        taskRepository.save(toUpdate);
+        taskRepository.findById(id)
+                .ifPresent(task -> {
+                    task.updateFrom(toUpdate);
+                    taskRepository.save(task);
+                });
         return ResponseEntity.noContent().build();
     }
 
@@ -55,5 +59,16 @@ public class TaskController {
     ResponseEntity<Task> createTask(@RequestBody @Valid Task task){
         Task result = taskRepository.save(task);
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    }
+
+    @Transactional
+    @PatchMapping("/tasks/{id}")
+    public ResponseEntity<?> toggleTask(@PathVariable Integer id){
+        if(!taskRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        taskRepository.findById(id)
+                .ifPresent(task->task.setDone(!task.isDone()));
+        return ResponseEntity.noContent().build();
     }
 }

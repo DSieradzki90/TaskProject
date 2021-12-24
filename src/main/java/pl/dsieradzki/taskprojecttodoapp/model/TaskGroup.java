@@ -2,41 +2,32 @@ package pl.dsieradzki.taskprojecttodoapp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "tasks")
-public class Task {
+@Table(name = "task_groups")
+public class TaskGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotBlank(message = "Task's description can't be blank")
+    @NotBlank(message = "Task's groups description can't be blank")
     private String description;
     private boolean done;
-    private LocalDateTime deadline;
     @Embedded
     private Audit audit = new Audit();
-    @ManyToOne
-    @JoinColumn(name = "task_group_id")
-    private TaskGroup group;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "group")
+    private Set<Task> tasks;
 
-    public Task() {
-    }
-
-    public LocalDateTime getDeadline() {
-        return deadline;
-    }
-
-    public void setDeadline(LocalDateTime deadline) {
-        this.deadline = deadline;
+    public TaskGroup() {
     }
 
     public int getId() {
         return id;
     }
 
-     void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 
@@ -56,15 +47,11 @@ public class Task {
         this.done = done;
     }
 
-    public TaskGroup getGroup() {
-        return group;
+    public Set<Task> getTasks() {
+        return tasks;
     }
 
-    public void updateFrom(Task source){
-        description = source.description;
-        done = source.done;
-        deadline = source.deadline;
-        group = source.group;
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
     }
-
 }
