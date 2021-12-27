@@ -20,4 +20,6 @@ public interface TaskRepository {
     Page<Task> findAll(Pageable page);
 
     List<Task> findByDone(@Param("state")boolean done);
+
+    boolean existsByDoneIsFalseAndGroup_Id(Integer groupId);
 }

@@ -2,7 +2,6 @@ package pl.dsieradzki.taskprojecttodoapp.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,6 +18,9 @@ public class TaskGroup {
     private Audit audit = new Audit();
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "group")
     private Set<Task> tasks;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     public TaskGroup() {
     }
@@ -53,5 +55,21 @@ public class TaskGroup {
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public Audit getAudit() {
+        return audit;
+    }
+
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
+
+    public Project getProjects() {
+        return project;
+    }
+
+    public void setProjects(Project project) {
+        this.project = project;
     }
 }
